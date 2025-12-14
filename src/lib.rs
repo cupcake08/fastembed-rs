@@ -83,7 +83,7 @@ pub use crate::models::text_embedding::EmbeddingModel;
 #[deprecated(note = "use `TextInitOptions` instead")]
 pub use crate::text_embedding::TextInitOptions as InitOptions;
 pub use crate::text_embedding::{
-    InitOptionsUserDefined, TextEmbedding, TextInitOptions, UserDefinedEmbeddingModel,
+    InitOptionsUserDefined, OnnxSource, TextEmbedding, TextInitOptions, UserDefinedEmbeddingModel,
 };
 
 // For Sparse Text Embedding
@@ -102,6 +102,6 @@ pub use crate::models::image_embedding::ImageEmbeddingModel;
 // For Reranking
 pub use crate::models::reranking::RerankerModel;
 pub use crate::reranking::{
-    OnnxSource, RerankInitOptions, RerankInitOptionsUserDefined, RerankResult, TextRerank,
+    RerankInitOptions, RerankInitOptionsUserDefined, RerankResult, TextRerank,
     UserDefinedRerankingModel,
 };

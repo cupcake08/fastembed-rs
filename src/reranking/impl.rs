@@ -85,7 +85,7 @@ impl TextRerank {
 
         let session = Session::builder()?
             .with_execution_providers(execution_providers)?
-            .with_optimization_level(GraphOptimizationLevel::Level3)?
+            .with_optimization_level(GraphOptimizationLevel::Level1)?
             .with_intra_threads(threads)?
             .commit_from_file(model_file_reference)?;
 
@@ -109,7 +109,7 @@ impl TextRerank {
 
         let session = Session::builder()?
             .with_execution_providers(execution_providers)?
-            .with_optimization_level(GraphOptimizationLevel::Level3)?
+            .with_optimization_level(GraphOptimizationLevel::Level1)?
             .with_intra_threads(threads)?;
 
         let session = match &model.onnx_source {

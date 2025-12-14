@@ -70,8 +70,10 @@ pub enum EmbeddingModel {
     ClipVitB32,
     /// jinaai/jina-embeddings-v2-base-code
     JinaEmbeddingsV2BaseCode,
-    /// onnx-community/embeddinggemma-300m-ONNX
+    /// onnx-community/embeddinggemma-300m-ONNX (full FP32)
     EmbeddingGemma300M,
+    /// onnx-community/embeddinggemma-300m-ONNX (Q4F16 quantized, ~175MB)
+    EmbeddingGemma300MQ,
 }
 
 /// Centralized function to initialize the models map.
@@ -369,6 +371,15 @@ fn init_models_map() -> HashMap<EmbeddingModel, ModelInfo<EmbeddingModel>> {
             model_code: String::from("onnx-community/embeddinggemma-300m-ONNX"),
             model_file: String::from("onnx/model.onnx"),
             additional_files: vec!["onnx/model.onnx_data".to_string()],
+            output_key: Some(crate::OutputKey::ByName("sentence_embedding")),
+        },
+        ModelInfo {
+            model: EmbeddingModel::EmbeddingGemma300MQ,
+            dim: 768,
+            description: String::from("Quantized EmbeddingGemma (Q4F16, ~175MB) from Google"),
+            model_code: String::from("onnx-community/embeddinggemma-300m-ONNX"),
+            model_file: String::from("onnx/model_q4f16.onnx"),
+            additional_files: vec!["onnx/model_q4f16.onnx_data".to_string()],
             output_key: Some(crate::OutputKey::ByName("sentence_embedding")),
         },
     ];

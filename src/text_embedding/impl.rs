@@ -88,11 +88,14 @@ impl TextEmbedding {
 
     /// Create a TextEmbedding instance from model files provided by the user.
     ///
-    /// This can be used for 'bring your own' embedding models
+    /// This can be used for 'bring your own' embedding models.
+    /// Supports both in-memory ONNX bytes and file paths (for models with external data files).
     pub fn try_new_from_user_defined(
         model: UserDefinedEmbeddingModel,
         options: InitOptionsUserDefined,
     ) -> Result<Self> {
+        use super::OnnxSource;
+
         let InitOptionsUserDefined {
             execution_providers,
             max_length,
@@ -102,9 +105,14 @@ impl TextEmbedding {
 
         let session = Session::builder()?
             .with_execution_providers(execution_providers)?
-            .with_optimization_level(GraphOptimizationLevel::Level3)?
-            .with_intra_threads(threads)?
-            .commit_from_memory(&model.onnx_file)?;
+            .with_optimization_level(GraphOptimizationLevel::Level1)?
+            .with_intra_threads(threads)?;
+
+        // Handle both in-memory and file-based ONNX sources
+        let session = match &model.onnx_source {
+            OnnxSource::Memory(bytes) => session.commit_from_memory(bytes)?,
+            OnnxSource::File(path) => session.commit_from_file(path)?,
+        };
 
         let tokenizer = load_tokenizer(model.tokenizer_files, max_length)?;
         Ok(Self::new(
@@ -194,6 +202,7 @@ impl TextEmbedding {
             EmbeddingModel::JinaEmbeddingsV2BaseCode => Some(Pooling::Mean),
 
             EmbeddingModel::EmbeddingGemma300M => Some(Pooling::Mean),
+            EmbeddingModel::EmbeddingGemma300MQ => Some(Pooling::Mean),
         }
     }
 

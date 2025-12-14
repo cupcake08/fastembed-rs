@@ -71,12 +71,42 @@ impl From<TextInitOptions> for InitOptionsUserDefined {
     }
 }
 
+/// Enum for the source of the onnx file
+///
+/// User-defined models can either be in memory or on disk.
+/// Use `File` variant for models with external data files (e.g., .onnx_data)
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum OnnxSource {
+    /// ONNX model loaded into memory as bytes
+    Memory(Vec<u8>),
+    /// Path to ONNX model file on disk (supports external data files)
+    File(std::path::PathBuf),
+}
+
+impl From<Vec<u8>> for OnnxSource {
+    fn from(bytes: Vec<u8>) -> Self {
+        OnnxSource::Memory(bytes)
+    }
+}
+
+impl From<std::path::PathBuf> for OnnxSource {
+    fn from(path: std::path::PathBuf) -> Self {
+        OnnxSource::File(path)
+    }
+}
+
+impl From<&std::path::Path> for OnnxSource {
+    fn from(path: &std::path::Path) -> Self {
+        OnnxSource::File(path.to_path_buf())
+    }
+}
+
 /// Struct for "bring your own" embedding models
 ///
-/// The onnx_file and tokenizer_files are expecting the files' bytes
+/// Supports both in-memory ONNX bytes and file paths (for models with external data)
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UserDefinedEmbeddingModel {
-    pub onnx_file: Vec<u8>,
+    pub onnx_source: OnnxSource,
     pub tokenizer_files: TokenizerFiles,
     pub pooling: Option<Pooling>,
     pub quantization: QuantizationMode,
@@ -84,9 +114,10 @@ pub struct UserDefinedEmbeddingModel {
 }
 
 impl UserDefinedEmbeddingModel {
-    pub fn new(onnx_file: Vec<u8>, tokenizer_files: TokenizerFiles) -> Self {
+    /// Create a new UserDefinedEmbeddingModel from ONNX bytes or file path
+    pub fn new(onnx_source: impl Into<OnnxSource>, tokenizer_files: TokenizerFiles) -> Self {
         Self {
-            onnx_file,
+            onnx_source: onnx_source.into(),
             tokenizer_files,
             quantization: QuantizationMode::None,
             pooling: None,
