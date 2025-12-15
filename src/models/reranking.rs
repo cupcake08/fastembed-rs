@@ -13,6 +13,8 @@ pub enum RerankerModel {
     JINARerankerV1TurboEn,
     /// jinaai/jina-reranker-v2-base-multilingual
     JINARerankerV2BaseMultiligual,
+    /// jinaai/jina-reranker-v2-base-multilingual quantized
+    JINARerankerV2BaseMultiligualQuantized,
 }
 
 pub fn reranker_model_list() -> Vec<RerankerModelInfo> {
@@ -43,6 +45,14 @@ pub fn reranker_model_list() -> Vec<RerankerModelInfo> {
             description: String::from("reranker model for multilingual"),
             model_code: String::from("jinaai/jina-reranker-v2-base-multilingual"),
             model_file: String::from("onnx/model.onnx"),
+
+            additional_files: vec![],
+        },
+        RerankerModelInfo {
+            model: RerankerModel::JINARerankerV2BaseMultiligualQuantized,
+            description: String::from("Quantized multilingual reranker (INT8)"),
+            model_code: String::from("jinaai/jina-reranker-v2-base-multilingual"),
+            model_file: String::from("onnx/model_quantized.onnx"),
             additional_files: vec![],
         },
     ];
